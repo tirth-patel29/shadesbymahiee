@@ -1,19 +1,26 @@
 import { useEffect, useState } from "react";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, LogOut, History, User } from "lucide-react";
 import dp from "@/assets/dp.jpg";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-const links = [
-  { href: "#categories", label: "Shop" },
-  { href: "#products", label: "Products" },
-  { href: "#custom", label: "Custom Order" },
-  { href: "#about", label: "About" },
-];
+interface NavbarProps {
+  onOrderHistoryClick?: () => void;
+}
 
-export function Navbar() {
+export function Navbar({ onOrderHistoryClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { itemCount, openDrawer } = useCart();
+  const { user, userProfile, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -21,6 +28,13 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const links = [
+    { href: "#categories", label: "Shop" },
+    { href: "#products", label: "Products" },
+    { href: "#custom", label: "Custom Order" },
+    { href: "#about", label: "About" },
+  ];
 
   return (
     <header
@@ -69,6 +83,53 @@ export function Navbar() {
             title={`${itemCount} items in cart`}
           >
             <ShoppingBag className="h-4 w-4" strokeWidth={1.75} />
+          {/* Profile Dropdown - Only visible when logged in */}
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label="Account menu"
+                  className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-foreground transition-all hover:bg-accent hover:scale-105"
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={userProfile?.photoURL} alt={userProfile?.displayName} />
+                    <AvatarFallback className="bg-amber-800 text-amber-50 font-semibold">
+                      {userProfile?.displayName?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {/* User Info */}
+                <div className="px-4 py-3 border-b border-border">
+                  <p className="text-sm font-semibold text-foreground">{userProfile?.displayName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{userProfile?.email}</p>
+                </div>
+
+                {/* Menu Items */}
+                <DropdownMenuItem onClick={onOrderHistoryClick} className="cursor-pointer">
+                  <History className="mr-2 h-4 w-4" />
+                  <span>Order History</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem disabled className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Account Details</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
             {itemCount > 0 && (
               <span className="absolute -right-1 -top-1 inline-flex h-5 w-5 items-center justify-center rounded-full gradient-warm text-xs font-semibold text-primary-foreground shadow-soft animate-pulse">
                 {itemCount > 99 ? "99+" : itemCount}

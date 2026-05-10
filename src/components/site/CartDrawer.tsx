@@ -1,8 +1,25 @@
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Minus, Plus, Trash2, ShoppingBag, ChevronRight } from "lucide-react";
 
-export function CartDrawer() {
+interface CartDrawerProps {
+  onCheckoutClick?: () => void;
+}
+
+export function CartDrawer({ onCheckoutClick }: CartDrawerProps) {
   const { items, subtotal, itemCount, isDrawerOpen, closeDrawer, updateQuantity, removeItem } = useCart();
+  const { user, setIsAuthModalOpen } = useAuth();
+
+  const handleCheckoutClick = () => {
+    if (!user) {
+      // If not logged in, show auth modal
+      setIsAuthModalOpen(true);
+    } else {
+      // If logged in, show checkout modal
+      onCheckoutClick?.();
+    }
+    closeDrawer();
+  };
 
   if (!isDrawerOpen) return null;
 
@@ -137,7 +154,9 @@ export function CartDrawer() {
             </div>
 
             {/* Checkout Button */}
-            <button className="w-full rounded-full gradient-warm px-5 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <button 
+              onClick={handleCheckoutClick}
+              className="w-full rounded-full gradient-warm px-5 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]">
               Proceed to Checkout
             </button>
 
