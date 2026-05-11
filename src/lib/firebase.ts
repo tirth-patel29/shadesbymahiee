@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCeYW4FzPkzScz4vT0EQjMluGioZpckO20",
-  authDomain: "shadesbymahie.firebaseapp.com",
-  projectId: "shadesbymahie",
-  storageBucket: "shadesbymahie.firebasestorage.app",
-  messagingSenderId: "598060293361",
-  appId: "1:598060293361:web:fa9639da509b45e700dd50",
-  measurementId: "G-E01HF2EX2Z",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
